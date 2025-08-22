@@ -1,0 +1,511 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Akşehir Spor | Aylık Yönetim Raporu</title>
+  <style>
+    :root {
+      --ink: #111827; /* slate-900 */
+      --muted: #6b7280; /* gray-500 */
+      --brand: #0ea5e9; /* sky-500 */
+      --brand-ink: #075985; /* sky-800 */
+      --paper: #ffffff;
+      --line: #e5e7eb; /* gray-200 */
+      --accent: #f1f5f9; /* slate-100 */
+    }
+    html, body { height: 100%; }
+    body {
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      color: var(--ink);
+      background: #f6f7f9;
+      margin: 0;
+    }
+    .sheet {
+      width: 210mm; /* A4 */
+      min-height: 297mm;
+      margin: 16px auto;
+      background: var(--paper);
+      box-shadow: 0 10px 30px rgba(0,0,0,.08);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .container { padding: 20mm 18mm; }
+
+    header {
+      display: grid;
+      grid-template-columns: 120px 1fr 260px;
+      gap: 16px;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+    .logo {
+      width: 100%; height: 100px; border: 2px dashed var(--line); border-radius: 12px; display:flex; align-items:center; justify-content:center; color:var(--muted); font-size:.9rem;
+      background: var(--accent);
+    }
+    .title {
+      text-align: center;
+    }
+    .title h1 { margin: 0; font-size: 20px; letter-spacing:.3px; }
+    .title p { margin: 6px 0 0; color: var(--muted); font-size: 12px; }
+
+    .meta {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      font-size: 12px;
+      background: var(--accent);
+      padding: 12px; border-radius: 12px; border: 1px solid var(--line);
+    }
+    .meta label { display:block; color: var(--muted); font-size: 11px; }
+    .meta input, .meta textarea, .meta select {
+      width: 100%; padding: 8px 10px; border: 1px solid var(--line); border-radius: 8px; font-size: 12px; background: #fff;
+    }
+
+    .controls { display:flex; gap: 10px; margin: 10px 0 18px; }
+    .btn {
+      border: 1px solid var(--brand);
+      background: var(--brand);
+      color: #fff; padding: 10px 14px; border-radius: 10px; font-weight: 600; cursor: pointer; font-size: 12px;
+    }
+    .btn.secondary { background: #fff; color: var(--brand-ink); border-color: var(--brand-ink); }
+    .btn.danger { background: #fff; color: #b91c1c; border-color: #ef4444; }
+
+    h2 { margin: 22px 0 8px; font-size: 16px; border-bottom: 1px solid var(--line); padding-bottom: 6px; }
+    .section { margin-top: 14px; }
+
+    table { width: 100%; border-collapse: collapse; font-size: 12px; }
+    th, td { border: 1px solid var(--line); padding: 8px 10px; vertical-align: top; }
+    th { background: #f8fafc; text-align: left; }
+    tfoot td { font-weight: 700; }
+
+    .grid-2 { display:grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .grid-3 { display:grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+
+    .card { border: 1px solid var(--line); border-radius: 12px; padding: 12px; background: #fff; }
+    .muted { color: var(--muted); }
+
+    .signature-grid {
+      display:grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-top: 22px;
+    }
+    .signature {
+      border-top: 1px solid var(--line); padding-top: 10px; text-align: center; height: 70px;
+    }
+
+    .no-print { }
+    @media print {
+      body { background: #fff; }
+      .sheet { box-shadow: none; border-radius: 0; width: auto; min-height: initial; }
+      .container { padding: 12mm; }
+      .no-print, #logoUpload { display: none !important; }
+      .section { page-break-inside: avoid; }
+      h2 { color: #000; }
+      a { color: #000; text-decoration: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="sheet">
+    <div class="container">
+      <header>
+        <div id="logo" class="logo">Logo yüklemek için aşağıdan seçin</div>
+        <div class="title">
+          <h1>AKŞEHİR SPOR KULÜBÜ – AYLIK YÖNETİM RAPORU</h1>
+          <p class="muted">Bu şablon, Başkan’a sunulacak aylık raporlar için hazırlanmıştır.</p>
+        </div>
+        <div class="meta">
+          <div>
+            <label>Dönem</label>
+            <input type="month" id="period" />
+          </div>
+          <div>
+            <label>Hazırlayan</label>
+            <input type="text" id="preparedBy" placeholder="Aydın Ceylan – Başkan Yardımcısı" />
+          </div>
+          <div>
+            <label>Sunum Tarihi</label>
+            <input type="date" id="presentDate" />
+          </div>
+          <div>
+            <label>Toplantı No</label>
+            <input type="text" id="meetingNo" placeholder="2025/08-01" />
+          </div>
+        </div>
+      </header>
+
+      <div class="controls no-print">
+        <input type="file" id="logoUpload" accept="image/*" class="btn secondary" />
+        <button class="btn" onclick="window.print()">Yazdır / PDF Kaydet</button>
+        <button class="btn danger" onclick="if(confirm('Tüm alanlar temizlensin mi?')) resetForm();">Formu Temizle</button>
+      </div>
+
+      <!-- 1) Mali Durum -->
+      <section class="section" id="mali-durum">
+        <h2>1) Mali Durum</h2>
+        <div class="grid-2">
+          <div class="card">
+            <table id="financeTable">
+              <thead>
+                <tr>
+                  <th style="width: 18%">Tarih</th>
+                  <th style="width: 42%">Açıklama</th>
+                  <th style="width: 18%">Tutar (TL)</th>
+                  <th style="width: 12%">Tür</th>
+                  <th style="width: 10%" class="no-print">İşlem</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><input type="date"></td>
+                  <td contenteditable="true" placeholder="Sponsorluk / forma satışı / kira vb."></td>
+                  <td><input type="number" step="0.01" class="amount" oninput="recalc()"></td>
+                  <td>
+                    <select onchange="recalc()">
+                      <option>Gelir</option>
+                      <option>Gider</option>
+                    </select>
+                  </td>
+                  <td class="no-print"><button class="btn secondary" onclick="removeRow(this)">Sil</button></td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr>
+                  <td colspan="5" class="no-print"><button class="btn secondary" onclick="addFinanceRow()">Satır Ekle</button></td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+          <div class="card">
+            <table>
+              <tbody>
+                <tr><th>Toplam Gelir</th><td id="sumIncome">0</td></tr>
+                <tr><th>Toplam Gider</th><td id="sumExpense">0</td></tr>
+                <tr><th>Net (Gelir - Gider)</th><td id="sumNet">0</td></tr>
+                <tr><th>Kasa Durumu Notu</th><td contenteditable="true" class="muted">Kısa değerlendirme…</td></tr>
+                <tr><th>Borç / Alacak</th><td contenteditable="true" class="muted">Varsa detay…</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- 2) Futbol Takımı -->
+      <section class="section" id="futbol-takimi">
+        <h2>2) Futbol Takımı</h2>
+        <div class="grid-2">
+          <div class="card">
+            <h3 style="margin:6px 0 8px;">Maç Sonuçları</h3>
+            <table id="matchesTable">
+              <thead>
+                <tr>
+                  <th style="width:16%">Tarih</th>
+                  <th style="width:26%">Rakip</th>
+                  <th style="width:16%">Skor</th>
+                  <th style="width:32%">Notlar</th>
+                  <th style="width:10%" class="no-print">İşlem</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><input type="date"></td>
+                  <td contenteditable="true"></td>
+                  <td contenteditable="true" placeholder="2-1"></td>
+                  <td contenteditable="true" placeholder="Oyuncu A sakatlandı, B gol."></td>
+                  <td class="no-print"><button class="btn secondary" onclick="removeRow(this)">Sil</button></td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr>
+                  <td colspan="5" class="no-print"><button class="btn secondary" onclick="addRow('matchesTable')">Satır Ekle</button></td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+          <div class="card">
+            <h3 style="margin:6px 0 8px;">Transfer & Lisans</h3>
+            <div class="grid-2">
+              <div>
+                <label class="muted">Transferler</label>
+                <div contenteditable="true" class="card" style="min-height:70px;">Gelen/Giden oyuncular…</div>
+              </div>
+              <div>
+                <label class="muted">Lisans İşleri</label>
+                <div contenteditable="true" class="card" style="min-height:70px;">Tescil, vize, eksik evrak…</div>
+              </div>
+            </div>
+            <div style="margin-top:10px;">
+              <label class="muted">Disiplin / Riskler</label>
+              <div contenteditable="true" class="card" style="min-height:70px;">Ceza riski, sakatlıklar, sözleşme maddeleri…</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 3) Altyapı -->
+      <section class="section" id="altyapi">
+        <h2>3) Altyapı</h2>
+        <div class="card">
+          <table id="altyapiTable">
+            <thead>
+              <tr>
+                <th style="width:16%">Grup</th>
+                <th style="width:20%">Antrenör</th>
+                <th>Öne Çıkan Oyuncular</th>
+                <th style="width:28%">Not</th>
+                <th style="width:10%" class="no-print">İşlem</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td contenteditable="true" placeholder="U14"></td>
+                <td contenteditable="true"></td>
+                <td contenteditable="true"></td>
+                <td contenteditable="true"></td>
+                <td class="no-print"><button class="btn secondary" onclick="removeRow(this)">Sil</button></td>
+              </tr>
+            </tbody>
+            <tfoot>
+              <tr>
+                <td colspan="5" class="no-print"><button class="btn secondary" onclick="addRow('altyapiTable')">Satır Ekle</button></td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </section>
+
+      <!-- 4) Tesisler -->
+      <section class="section" id="tesisler">
+        <h2>4) Tesisler</h2>
+        <div class="grid-2">
+          <div class="card">
+            <label class="muted">Bakım & Onarım</label>
+            <div contenteditable="true" class="card" style="min-height:100px;">Saha bakımı, soyunma odası, aydınlatma, malzeme durumu…</div>
+          </div>
+          <div class="card">
+            <h3 style="margin:6px 0 8px;">İhtiyaç Listesi</h3>
+            <table id="tesisIhtiyacTable">
+              <thead>
+                <tr>
+                  <th>Kalem</th>
+                  <th>Adet</th>
+                  <th>Öncelik</th>
+                  <th class="no-print" style="width:10%">İşlem</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td contenteditable="true" placeholder="Top, forma, koniler…"></td>
+                  <td contenteditable="true" placeholder="10"></td>
+                  <td contenteditable="true" placeholder="Yüksek/Orta/Düşük"></td>
+                  <td class="no-print"><button class="btn secondary" onclick="removeRow(this)">Sil</button></td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr>
+                  <td colspan="4" class="no-print"><button class="btn secondary" onclick="addRow('tesisIhtiyacTable')">Satır Ekle</button></td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- 5) Taraftar -->
+      <section class="section" id="taraftar">
+        <h2>5) Taraftar</h2>
+        <div class="grid-3">
+          <div class="card">
+            <label class="muted">Maç Katılımı</label>
+            <div contenteditable="true" class="card" style="min-height:70px;">Ortalama seyirci, deplasman katılımı…</div>
+          </div>
+          <div class="card">
+            <label class="muted">Disiplin Olayları</label>
+            <div contenteditable="true" class="card" style="min-height:70px;">Küfür, saha olayları, PFDK riskleri…</div>
+          </div>
+          <div class="card">
+            <label class="muted">Organizasyon</label>
+            <div contenteditable="true" class="card" style="min-height:70px;">Biletleme, tribün düzeni, koreografi…</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 6) Halkla İlişkiler ve 7) Basın -->
+      <section class="section" id="halkla-iliskiler">
+        <h2>6) Halkla İlişkiler</h2>
+        <div class="grid-2">
+          <div class="card">
+            <label class="muted">Sosyal Medya / Toplumla İletişim</label>
+            <div contenteditable="true" class="card" style="min-height:90px;">Erişim, etkileşim, kampanyalar…</div>
+          </div>
+          <div class="card">
+            <label class="muted">Sponsor Görüşmeleri</label>
+            <div contenteditable="true" class="card" style="min-height:90px;">Yeni/yenilenen anlaşmalar, iş insanları ile temas…</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="basin-iletisim">
+        <h2>7) Basın ve İletişim</h2>
+        <div class="card">
+          <table id="basinTable">
+            <thead>
+              <tr>
+                <th style="width:22%">Tarih</th>
+                <th style="width:48%">Konu / İçerik</th>
+                <th style="width:20%">Kanal</th>
+                <th style="width:10%" class="no-print">İşlem</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><input type="date"></td>
+                <td contenteditable="true" placeholder="Basın toplantısı / bülten / TV canlı…"></td>
+                <td contenteditable="true" placeholder="Yerel TV, gazete, sosyal medya"></td>
+                <td class="no-print"><button class="btn secondary" onclick="removeRow(this)">Sil</button></td>
+              </tr>
+            </tbody>
+            <tfoot>
+              <tr>
+                <td colspan="4" class="no-print"><button class="btn secondary" onclick="addRow('basinTable')">Satır Ekle</button></td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </section>
+
+      <!-- 8) Genel Değerlendirme / Hedefler -->
+      <section class="section" id="genel-degerlendirme">
+        <h2>8) Genel Değerlendirme & Önümüzdeki Ay Hedefleri</h2>
+        <div class="grid-2">
+          <div class="card">
+            <label class="muted">Genel Değerlendirme</label>
+            <div contenteditable="true" class="card" style="min-height:120px;">Kısa-orta vadeli riskler, çözüm önerileri…</div>
+          </div>
+          <div class="card">
+            <label class="muted">Hedefler</label>
+            <div contenteditable="true" class="card" style="min-height:120px;">Somut ve ölçülebilir hedefler…</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- İmzalar -->
+      <section class="section" id="imzalar">
+        <h2>Onay & İmzalar</h2>
+        <div class="signature-grid">
+          <div class="signature">Başkan<br><strong>A. Nuri Köksal</strong></div>
+          <div class="signature">Başkan Yardımcısı<br><strong>Aydın Ceylan</strong></div>
+          <div class="signature">Sayman<br><strong>Merih Dinçer</strong></div>
+        </div>
+      </section>
+
+      <p class="muted" style="margin-top:20px; font-size:11px;">*Bu belge Akşehir Spor Kulübü Yönetim Kurulu iç kullanımına özeldir.</p>
+    </div>
+  </div>
+
+  <script>
+    function addFinanceRow() {
+      const tbody = document.querySelector('#financeTable tbody');
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td><input type="date"></td>
+        <td contenteditable="true"></td>
+        <td><input type="number" step="0.01" class="amount" oninput="recalc()"></td>
+        <td>
+          <select onchange="recalc()">
+            <option>Gelir</option>
+            <option>Gider</option>
+          </select>
+        </td>
+        <td class="no-print"><button class="btn secondary" onclick="removeRow(this)">Sil</button></td>
+      `;
+      tbody.appendChild(tr);
+    }
+
+    function addRow(tableId) {
+      const tbody = document.querySelector(`#${tableId} tbody`);
+      const cols = tbody.rows[0].cells.length;
+      const tr = document.createElement('tr');
+      for (let i=0;i<cols;i++) {
+        const td = document.createElement('td');
+        if (i === cols-1) { // action
+          td.className = 'no-print';
+          td.innerHTML = '<button class="btn secondary" onclick="removeRow(this)">Sil</button>';
+        } else if (tableId === 'basinTable' && i === 0) {
+          td.innerHTML = '<input type="date">';
+        } else if (tableId === 'matchesTable' && i === 0) {
+          td.innerHTML = '<input type="date">';
+        } else {
+          td.contentEditable = 'true';
+        }
+        tr.appendChild(td);
+      }
+      tbody.appendChild(tr);
+    }
+
+    function removeRow(btn) {
+      const tr = btn.closest('tr');
+      const tbody = tr.parentElement;
+      if (tbody.rows.length > 1) {
+        tr.remove();
+        recalc();
+      }
+    }
+
+    function recalc() {
+      let income = 0, expense = 0;
+      const rows = document.querySelectorAll('#financeTable tbody tr');
+      rows.forEach(r => {
+        const amountInput = r.querySelector('input.amount');
+        const typeSel = r.querySelector('select');
+        const val = parseFloat(amountInput?.value || '0');
+        if (!isNaN(val)) {
+          if ((typeSel?.value || 'Gelir') === 'Gelir') income += val; else expense += val;
+        }
+      });
+      const fmt = n => n.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      document.getElementById('sumIncome').textContent = fmt(income);
+      document.getElementById('sumExpense').textContent = fmt(expense);
+      document.getElementById('sumNet').textContent = fmt(income - expense);
+    }
+
+    function resetForm() {
+      // Clear inputs
+      document.querySelectorAll('input[type="text"], input[type="date"], input[type="month"]').forEach(i => i.value = '');
+      // Clear contenteditable fields
+      document.querySelectorAll('[contenteditable="true"]').forEach(el => el.textContent = '');
+      // Reset selects
+      document.querySelectorAll('select').forEach(s => s.value = 'Gelir');
+      // Reset finance table to one row
+      const fTbody = document.querySelector('#financeTable tbody');
+      fTbody.innerHTML = '';
+      addFinanceRow();
+      // Reset other dynamic tables to one row
+      ['matchesTable','altyapiTable','tesisIhtiyacTable','basinTable'].forEach(id => {
+        const tb = document.querySelector(`#${id} tbody`);
+        if (!tb) return;
+        const first = tb.rows[0]?.cloneNode(true);
+        tb.innerHTML = '';
+        if (first) tb.appendChild(first);
+      });
+      recalc();
+    }
+
+    // Logo upload preview
+    document.getElementById('logoUpload').addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        const div = document.getElementById('logo');
+        div.style.background = `url('${reader.result}') center/contain no-repeat, var(--accent)`;
+        div.textContent = '';
+        div.style.border = '1px solid var(--line)';
+      };
+      reader.readAsDataURL(file);
+    });
+
+    // Initial calc
+    recalc();
+  </script>
+</body>
+</html>
